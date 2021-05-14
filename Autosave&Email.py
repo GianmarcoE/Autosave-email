@@ -1,7 +1,6 @@
 import openpyxl
 from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import Font
-from copy import copy, deepcopy
 import os
 import tkinter as tk
 from tkinter import filedialog
@@ -11,7 +10,6 @@ from datetime import datetime, date
 import time
 from smtplib import SMTP_SSL as SMTP
 import smtplib
-import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
@@ -31,181 +29,209 @@ root.minsize(550, 550)
 root.configure(background='#fff')
 
 def getFile ():
-
-    import_file_path = filedialog.askopenfilename()
     
-    wb = openpyxl.load_workbook(import_file_path)
-    
-    labelinfo = wb.create_sheet()
-    labelinfo.title = "Info"
+    try:
 
-    labelinfo['B3'] = 'Prepared by Gianmarco Ercolani'
-
-    labelinfo['B4'] = 'Analytics Team'
-
-    labelinfo['B6'] = 'If you have any further questions, please contact me directly:'
-    labelinfo['B6'].font = Font(italic=True)
-
-    labelinfo['B7'] = 'gianmarco.ercolani@xxx.com'
-    labelinfo['B7'].font = Font(underline='single')
-
-    for i in range (3, 7):
-        labelinfo.cell(row=3, column=i).border = Border(top=Side(style='thin'))
-    for i in range (3, 7):
-        labelinfo.cell(row=7, column=i).border = Border(bottom=Side(style='thin'))
-    for i in range (4, 7):
-        labelinfo.cell(row=i, column=2).border = Border(left=Side(style='thin'))
-    for i in range (4, 7):
-        labelinfo.cell(row=i, column=7).border = Border(right=Side(style='thin'))
-
-    labelinfo.cell(row=3, column=2).border = Border(top=Side(style='thin'), left=Side(style='thin'))
-    labelinfo.cell(row=3, column=7).border = Border(top=Side(style='thin'), right=Side(style='thin'))
-    labelinfo.cell(row=7, column=2).border = Border(bottom=Side(style='thin'), left=Side(style='thin'))
-    labelinfo.cell(row=7, column=7).border = Border(bottom=Side(style='thin'), right=Side(style='thin'))
-    labelinfo.sheet_view.showGridLines = False
-
-    today = date.today()
-    d1 = today.strftime("%m.%Y")
-    d2 = today.strftime("%Y.%m.%d")
-    d3 = today.strftime("%Y")
+        import_file_path = filedialog.askopenfilename() #Opens file path for report
         
-    labelinfo['B10'] = (f'Structure: {structure.get()}')
-    labelinfo['B10'].font = Font(bold=True)
-    labelinfo['B11'] = (f'Date as of: {d2}')
-    labelinfo['B11'].font = Font(bold=True)
-    labelinfo['B12'] = (f'Datasource: {sourcein.get()}')
-    labelinfo['B12'].font = Font(bold=True)
+        wb = openpyxl.load_workbook(import_file_path) #Imports the chosen file
 
-    labelinfo.protection.sheet = True
-    labelinfo.protection.enable()
-    labelinfo.protection.password = 'ProtezioneAttiva' #password
-    
-    if location.get() == 'PL' and var.get() == 1:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\PL\\{d3}\\{d1}\\DLP")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'PL' and var.get() == 0:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\PL\\{d3}\\{d1}")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'SE' and var.get() == 1:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\SE\\{d3}\\{d1}\\DLP")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'SE' and var.get() == 0:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\SE\\{d3}\\{d1}")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'DK' and var.get() == 1:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\DK\\{d3}\\{d1}\\DLP")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'DK' and var.get() == 0:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\DK\\{d3}\\{d1}")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'NO' and var.get() == 1:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\NO\\{d3}\\{d1}\\DLP")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'NO' and var.get() == 0:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\NO\\{d3}\\{d1}")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'FI' and var.get() == 1:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\FI\\{d3}\\{d1}\\DLP")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'FI' and var.get() == 0:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\FI\\{d3}\\{d1}")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'EE' and var.get() == 1:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\EE\\{d3}\\{d1}\\DLP")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'EE' and var.get() == 0:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\EE\\{d3}\\{d1}")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'Learning Reports' and var.get() == 1:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\Learning Reports\\{d3}\\{d1}\\DLP")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'Learning Reports' and var.get() == 0:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\Learning Reports\\{d3}\\{d1}")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'Other' and var.get() == 1:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\Other\\{d3}\\{d1}\\DLP")
-        wb.save(os.path.basename(import_file_path))
-    elif location.get() == 'Other' and var.get() == 0:
-        os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\Other\\{d3}\\{d1}")
-        wb.save(os.path.basename(import_file_path))
+        my_app = openpyxl.load_workbook('My_app.xlsx') #imports personal data from Excel (My_app)
 
-    def smtp_endpoint():
-        smtp = os.getenv('EMAIL_NOTIFICATIONS_SMTP_ENDPOINT', '*IP O SMTP ADDRESS*:25')
-        return tuple(smtp.split(':'))
+        sheet = my_app["Pers Data for App (signature)"] #selects sheet from personal Excel data
 
-    def sender():
-        return str("*gianmarco.ercolani@xxx.com*")
-        #return getpass.getuser() + '@' + socket.gethostname()
+        my_name = sheet.cell(row=2, column=1).value #stores name from Excel
 
-    def send_email(send_to, subject, message, file_path=None, file_name=None):
-        send_from = sender()
-        msg = MIMEMultipart('alternative')
-        msg['From'] = send_from
-        msg['To'] = send_to
-        msg["Cc"] = cc.get()
-        msg["Bcc"] = bcc.get()
-        msg['Subject'] = subject
-        msg.attach(MIMEText(message, 'html'))
-        if file_path:
-            f = open(file_path, 'rb')
-            attachment = MIMEApplication(f.read())
-            #attachment = MIMEText(f.read())
-            email_filename = file_name if file_name else file_path
-            attachment.add_header('Content-Disposition', 'attachment', filename=email_filename)
-            msg.attach(attachment)
-        smtp = smtp_endpoint()
-        server = smtplib.SMTP(smtp[0], smtp[1])
-        server.sendmail(send_from, msg['To'].split(";") + msg["Cc"].split(",") + msg["Bcc"].split(","), msg.as_string())
-        server.close()
+        my_mail = sheet.cell(row=2, column=2).value  #stores email from Excel
 
-    time.sleep(3)
-    message = """\
-    <html>
-    Hi,
-    <br><br>
-    Please find attached the requested report.
-    <br><br>
-    <div style="font-size:90%; color:#0606bf;">
-        <b>NEED A REPORT?</b>
-    </div>
-    <div style="font-size:90%;">
-        <i>I really enjoy helping our people  to be sure that you get your report as soon as possible, please use THIS tool instead of sending request via e-mail.</i>
-    </div>
-    <br>
-    Kind Regards,
-    <br><br>
-    <b>Gianmarco Ercolani</b>
-    <br>
-    <div style="font-size:90%;">
-        Reporting Specialist
-    <div>
-    <br>
-    <div style="font-size:90%;">
-        <b style="color:#0606bf;">xxx</b> | Analytics & Reporting
-    </div>
-    </div>
-    <div style="font-size:90%;">
-        Visit me: Address
-    </div>
-    <div style="font-size:90%;">
-        E-mail: gianmarco.ercolani@xxx.com
-    </div>
-    <div style="font-size:90%;">
-        Web:
-        <a href="www.example.com" target="_blank">
-            example.com
-        </a>
-    </div>
-    <br>
-    <div style="font-size:85%; color:#888">
-        Company info
+        my_jobtitle = sheet.cell(row=2, column=3).value  #stores job title from Excel
+
+        my_address = sheet.cell(row=2, column=4).value  #stores address from Excel
+
+        my_password = sheet.cell(row=2, column=5).value  #stores password from Excel
+
+        my_mnumber = sheet.cell(row=2, column=6).value #stores M number from Excel
+        
+        labelinfo = wb.create_sheet()  #created new Excel sheet
+        labelinfo.title = "Info" #names new Excel sheet
+
+        labelinfo['B3'] = f'Prepared by {my_name}' #writes in the given Excel cells
+
+        labelinfo['B4'] = 'Analytics & Reporting Team, Group People' #writes in the given Excel cells
+
+        labelinfo['B6'] = 'If you have any further questions, please contact me directly:' #writes in the given Excel cells
+        labelinfo['B6'].font = Font(italic=True)
+
+        labelinfo['B7'] = my_mail #writes in the given Excel cells
+        labelinfo['B7'].font = Font(underline='single')
+
+        for i in range (3, 7):
+            labelinfo.cell(row=3, column=i).border = Border(top=Side(style='thin'))
+        for i in range (3, 7):
+            labelinfo.cell(row=7, column=i).border = Border(bottom=Side(style='thin'))
+        for i in range (4, 7):
+            labelinfo.cell(row=i, column=2).border = Border(left=Side(style='thin'))
+        for i in range (4, 7):
+            labelinfo.cell(row=i, column=7).border = Border(right=Side(style='thin'))
+
+        labelinfo.cell(row=3, column=2).border = Border(top=Side(style='thin'), left=Side(style='thin'))
+        labelinfo.cell(row=3, column=7).border = Border(top=Side(style='thin'), right=Side(style='thin'))
+        labelinfo.cell(row=7, column=2).border = Border(bottom=Side(style='thin'), left=Side(style='thin'))
+        labelinfo.cell(row=7, column=7).border = Border(bottom=Side(style='thin'), right=Side(style='thin'))
+        labelinfo.sheet_view.showGridLines = False
+
+        today = date.today()
+        d1 = today.strftime("%m.%Y")
+        d2 = today.strftime("%Y.%m.%d")
+        d3 = today.strftime("%Y")
+
+        labelinfo['B10'] = (f'Structure: {structure.get()}')
+        labelinfo['B10'].font = Font(bold=True)
+        labelinfo['B11'] = (f'Date as of: {d2}')
+        labelinfo['B11'].font = Font(bold=True)
+        labelinfo['B12'] = (f'Datasource: {sourcein.get()}')
+        labelinfo['B12'].font = Font(bold=True)
+
+        labelinfo.protection.sheet = True
+        labelinfo.protection.enable()
+        labelinfo.protection.password = 'ProtezioneAttiva' #password
+
+        if location.get() == 'PL' and var.get() == 1:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\PL\\{d3}\\{d1}\\DLP")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'PL' and var.get() == 0:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\PL\\{d3}\\{d1}")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'SE' and var.get() == 1:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\SE\\{d3}\\{d1}\\DLP")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'SE' and var.get() == 0:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\SE\\{d3}\\{d1}")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'DK' and var.get() == 1:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\DK\\{d3}\\{d1}\\DLP")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'DK' and var.get() == 0:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\DK\\{d3}\\{d1}")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'NO' and var.get() == 1:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\NO\\{d3}\\{d1}\\DLP")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'NO' and var.get() == 0:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\NO\\{d3}\\{d1}")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'FI' and var.get() == 1:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\FI\\{d3}\\{d1}\\DLP")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'FI' and var.get() == 0:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\FI\\{d3}\\{d1}")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'EE' and var.get() == 1:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\EE\\{d3}\\{d1}\\DLP")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'EE' and var.get() == 0:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\EE\\{d3}\\{d1}")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'Learning Reports' and var.get() == 1:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\Learning Reports\\{d3}\\{d1}\\DLP")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'Learning Reports' and var.get() == 0:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\Learning Reports\\{d3}\\{d1}")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'Other' and var.get() == 1:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\Other\\{d3}\\{d1}\\DLP")
+            wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'Other' and var.get() == 0:
+            os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\Other\\{d3}\\{d1}")
+            wb.save(os.path.basename(import_file_path))
+
+        def smtp_endpoint():
+            smtp = os.getenv('EMAIL_NOTIFICATIONS_SMTP_ENDPOINT', '*IP O SMTP ADDRESS*:25')
+            return tuple(smtp.split(':'))
+
+        def sender():
+            return str("*gianmarco.ercolani@xxx.com*")
+            #return getpass.getuser() + '@' + socket.gethostname()
+
+        def send_email(send_to, subject, message, file_path=None, file_name=None):
+            send_from = sender()
+            msg = MIMEMultipart('alternative')
+            msg['From'] = send_from
+            msg['To'] = send_to
+            msg["Cc"] = cc.get()
+            msg["Bcc"] = bcc.get()
+            msg['Subject'] = subject
+            msg.attach(MIMEText(message, 'html'))
+            if file_path:
+                f = open(file_path, 'rb')
+                attachment = MIMEApplication(f.read())
+                #attachment = MIMEText(f.read())
+                email_filename = file_name if file_name else file_path
+                attachment.add_header('Content-Disposition', 'attachment', filename=email_filename)
+                msg.attach(attachment)
+            smtp = smtp_endpoint()
+            server = smtplib.SMTP(smtp[0], smtp[1])
+            server.sendmail(send_from, msg['To'].split(";") + msg["Cc"].split(",") + msg["Bcc"].split(","), msg.as_string())
+            server.close()
+
+        time.sleep(3)
+        message = """\
+        <html>
+        Hi,
         <br><br>
-        This e-mail may contain confidential information. If you receive this e-mail by mistake, please inform the sender, delete the e-mail and do not share or copy it.
-    </div>
-    </html>
-    """
-    send_email(email.get(), f"{os.path.basename(import_file_path)} {d1}", message, f"{os.path.abspath(os.path.basename(import_file_path))}", f"{os.path.basename(import_file_path)}")
+        Please find attached the requested report.
+        <br><br>
+        <div style="font-size:90%; color:#0606bf;">
+            <b>NEED A REPORT?</b>
+        </div>
+        <div style="font-size:90%;">
+            <i>I really enjoy helping our people  to be sure that you get your report as soon as possible, please use THIS tool instead of sending request via e-mail.</i>
+        </div>
+        <br>
+        Kind Regards,
+        <br><br>
+        <b>Gianmarco Ercolani</b>
+        <br>
+        <div style="font-size:90%;">
+            Reporting Specialist
+        <div>
+        <br>
+        <div style="font-size:90%;">
+            <b style="color:#0606bf;">xxx</b> | Analytics & Reporting
+        </div>
+        </div>
+        <div style="font-size:90%;">
+            Visit me: Address
+        </div>
+        <div style="font-size:90%;">
+            E-mail: gianmarco.ercolani@xxx.com
+        </div>
+        <div style="font-size:90%;">
+            Web:
+            <a href="www.example.com" target="_blank">
+                example.com
+            </a>
+        </div>
+        <br>
+        <div style="font-size:85%; color:#888">
+            Company info
+            <br><br>
+            This e-mail may contain confidential information. If you receive this e-mail by mistake, please inform the sender, delete the e-mail and do not share or copy it.
+        </div>
+        </html>
+        """
+        send_email(email.get(), f"{os.path.basename(import_file_path)} {d1}", message, f"{os.path.abspath(os.path.basename(import_file_path))}", f"{os.path.basename(import_file_path)}")
+        
+        os.chdir(f"C:\\Users\\{my_mnumber}\\Desktop") #set the directory back to desktop, so we'll be able to find the My_app Excel file
 
+        email.delete(0, 'end') #cancels what was written in the email address field
+        success = 'Report succesfully sent!'
+        email.insert(0, success) #inserts in the email address field the success message
+
+    except: #if any error occurs
+        email.delete(0, 'end') #cancels what was written in the email address field
+        error = 'An error occured, please try again'
+        email.insert(0, error)
 
 structure = Combobox(root, width=8)
 structure ['values']= ("MCC", "Org")
