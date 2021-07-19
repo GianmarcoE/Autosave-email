@@ -29,7 +29,7 @@ root.minsize(550, 550)
 root.configure(background='#fff')
 
 def getFile ():
-    
+
     try:
 
         import_file_path = filedialog.askopenfilename() #Opens file path for report
@@ -66,37 +66,37 @@ def getFile ():
         labelinfo['B7'].font = Font(underline='single')
 
         for i in range (3, 7):
-            labelinfo.cell(row=3, column=i).border = Border(top=Side(style='thin'))
+            labelinfo.cell(row=3, column=i).border = Border(top=Side(style='thin')) #applies borders to the Excel info sheet
         for i in range (3, 7):
-            labelinfo.cell(row=7, column=i).border = Border(bottom=Side(style='thin'))
+            labelinfo.cell(row=7, column=i).border = Border(bottom=Side(style='thin')) #applies borders to the Excel info sheet
         for i in range (4, 7):
-            labelinfo.cell(row=i, column=2).border = Border(left=Side(style='thin'))
+            labelinfo.cell(row=i, column=2).border = Border(left=Side(style='thin')) #applies borders to the Excel info sheet
         for i in range (4, 7):
-            labelinfo.cell(row=i, column=7).border = Border(right=Side(style='thin'))
+            labelinfo.cell(row=i, column=7).border = Border(right=Side(style='thin')) #applies borders to the Excel info sheet
 
-        labelinfo.cell(row=3, column=2).border = Border(top=Side(style='thin'), left=Side(style='thin'))
-        labelinfo.cell(row=3, column=7).border = Border(top=Side(style='thin'), right=Side(style='thin'))
-        labelinfo.cell(row=7, column=2).border = Border(bottom=Side(style='thin'), left=Side(style='thin'))
-        labelinfo.cell(row=7, column=7).border = Border(bottom=Side(style='thin'), right=Side(style='thin'))
-        labelinfo.sheet_view.showGridLines = False
+        labelinfo.cell(row=3, column=2).border = Border(top=Side(style='thin'), left=Side(style='thin')) #applies borders to the Excel info sheet
+        labelinfo.cell(row=3, column=7).border = Border(top=Side(style='thin'), right=Side(style='thin')) #applies borders to the Excel info sheet
+        labelinfo.cell(row=7, column=2).border = Border(bottom=Side(style='thin'), left=Side(style='thin')) #applies borders to the Excel info sheet
+        labelinfo.cell(row=7, column=7).border = Border(bottom=Side(style='thin'), right=Side(style='thin')) #applies borders to the Excel info sheet
+        labelinfo.sheet_view.showGridLines = False #hides gridlines from Excel sheet
 
-        today = date.today()
+        today = date.today() #imports today's date in the below formats
         d1 = today.strftime("%m.%Y")
         d2 = today.strftime("%Y.%m.%d")
         d3 = today.strftime("%Y")
-
-        labelinfo['B10'] = (f'Structure: {structure.get()}')
+            
+        labelinfo['B10'] = (f'Structure: {structure.get()}') #writes user input in the given cell
         labelinfo['B10'].font = Font(bold=True)
-        labelinfo['B11'] = (f'Date as of: {d2}')
+        labelinfo['B11'] = (f'Date as of: {d2}') #writes today's date in the given cell
         labelinfo['B11'].font = Font(bold=True)
-        labelinfo['B12'] = (f'Datasource: {sourcein.get()}')
+        labelinfo['B12'] = (f'Datasource: {sourcein.get()}') #writes user input in the given cell
         labelinfo['B12'].font = Font(bold=True)
 
         labelinfo.protection.sheet = True
-        labelinfo.protection.enable()
-        labelinfo.protection.password = 'ProtezioneAttiva' #password
-
-        if location.get() == 'PL' and var.get() == 1:
+        labelinfo.protection.enable() #activates Excel's sheet protection
+        labelinfo.protection.password = my_password #sets password
+        
+        if location.get() == 'PL' and var.get() == 1: #saves file in the correct folder
             os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\PL\\{d3}\\{d1}\\DLP")
             wb.save(os.path.basename(import_file_path))
         elif location.get() == 'PL' and var.get() == 0:
@@ -144,20 +144,23 @@ def getFile ():
         elif location.get() == 'Other' and var.get() == 0:
             os.chdir(f"K:\\2.6 NOC HRO\\11. Processes\\Reporting\\2. Sent reports\\Other\\{d3}\\{d1}")
             wb.save(os.path.basename(import_file_path))
+        elif location.get() == 'TA Report':
+            os.chdir("K:\\2.6 NOC HRO\\11. Processes\\Reporting\\TA Reporting\\TA Reporting - sent reports")
+            wb.save(os.path.basename(import_file_path))
 
-        def smtp_endpoint():
-            smtp = os.getenv('EMAIL_NOTIFICATIONS_SMTP_ENDPOINT', '*IP O SMTP ADDRESS*:25')
+        def smtp_endpoint(): #estabilishes SMTP connection
+            smtp = os.getenv('EMAIL_NOTIFICATIONS_SMTP_ENDPOINT', 'ccdfooo:25') #if the mails don't work, the IP is shut down, we should ask for a new one.
             return tuple(smtp.split(':'))
 
-        def sender():
-            return str("*gianmarco.ercolani@xxx.com*")
+        def sender(): #defines email sender
+            return str("peoplereports@foo.com")
             #return getpass.getuser() + '@' + socket.gethostname()
 
-        def send_email(send_to, subject, message, file_path=None, file_name=None):
+        def send_email(send_to, subject, message, file_path=None, file_name=None): #function to send email
             send_from = sender()
             msg = MIMEMultipart('alternative')
             msg['From'] = send_from
-            msg['To'] = send_to
+            msg['To'] = send_to + '; peoplereports@foo.com' #send email also to our shared mailbox - further rules are applied on Outlook so the mail moves automatically to the sent folder
             msg["Cc"] = cc.get()
             msg["Bcc"] = bcc.get()
             msg['Subject'] = subject
@@ -171,11 +174,11 @@ def getFile ():
                 msg.attach(attachment)
             smtp = smtp_endpoint()
             server = smtplib.SMTP(smtp[0], smtp[1])
-            server.sendmail(send_from, msg['To'].split(";") + msg["Cc"].split(",") + msg["Bcc"].split(","), msg.as_string())
+            server.sendmail(send_from, msg['To'].split(";") + msg["Cc"].split(";") + msg["Bcc"].split(";"), msg.as_string()) #actually sends email to receiver/Cc/Bcc separated by a ";"
             server.close()
 
-        time.sleep(3)
-        message = """\
+        time.sleep(3) #HTML & CSS Email text
+        message = f"""\
         <html>
         Hi,
         <br><br>
@@ -185,43 +188,43 @@ def getFile ():
             <b>NEED A REPORT?</b>
         </div>
         <div style="font-size:90%;">
-            <i>I really enjoy helping our people  to be sure that you get your report as soon as possible, please use THIS tool instead of sending request via e-mail.</i>
+            <i>I really enjoy helping our people â to be sure that you get your report as soon as possible, please use THIS tool instead of sending request via e-mail.</i>
         </div>
         <br>
         Kind Regards,
         <br><br>
-        <b>Gianmarco Ercolani</b>
+        <b>{my_name}</b>
         <br>
         <div style="font-size:90%;">
-            Reporting Specialist
+            {my_jobtitle}
         <div>
         <br>
         <div style="font-size:90%;">
-            <b style="color:#0606bf;">xxx</b> | Analytics & Reporting
+            <b style="color:#0606bf;">Foo</b> | Analytics & Reporting
         </div>
         </div>
         <div style="font-size:90%;">
-            Visit me: Address
+            Visit me: {my_address}
         </div>
         <div style="font-size:90%;">
-            E-mail: gianmarco.ercolani@xxx.com
+            E-mail: {my_mail}
         </div>
         <div style="font-size:90%;">
             Web:
-            <a href="www.example.com" target="_blank">
-                example.com
+            <a href="www.foo.com" target="_blank">
+                foo.com
             </a>
         </div>
         <br>
         <div style="font-size:85%; color:#888">
-            Company info
+            Foo info
             <br><br>
             This e-mail may contain confidential information. If you receive this e-mail by mistake, please inform the sender, delete the e-mail and do not share or copy it.
         </div>
         </html>
         """
-        send_email(email.get(), f"{os.path.basename(import_file_path)} {d1}", message, f"{os.path.abspath(os.path.basename(import_file_path))}", f"{os.path.basename(import_file_path)}")
-        
+        send_email(email.get(), f"AutoPY {os.path.basename(import_file_path)}", message, f"{os.path.abspath(os.path.basename(import_file_path))}", f"{os.path.basename(import_file_path)}")
+
         os.chdir(f"C:\\Users\\{my_mnumber}\\Desktop") #set the directory back to desktop, so we'll be able to find the My_app Excel file
 
         email.delete(0, 'end') #cancels what was written in the email address field
@@ -231,15 +234,15 @@ def getFile ():
     except: #if any error occurs
         email.delete(0, 'end') #cancels what was written in the email address field
         error = 'An error occured, please try again'
-        email.insert(0, error)
-
-structure = Combobox(root, width=8)
+        email.insert(0, error) #inserts in the email address field the error message
+        
+structure = Combobox(root, width=8) #values for "structure" dropdown menu
 structure ['values']= ("MCC", "Org")
 structure.configure(font=10)
 structure.current(0)
 
-location = Combobox(root, width=8)
-location ['values']= ("PL", "SE", "DK", "NO", "FI", "EE", "Other", "Learning Reports")
+location = Combobox(root, width=8) # values for "folder" dropdown menu
+location ['values']= ("PL", "SE", "DK", "NO", "FI", "EE", "Other", "Learning Reports", "TA Report")
 location["state"]= "readonly"
 location.configure(font=10)
 location.current(0)
@@ -271,7 +274,7 @@ sourcein.grid(row= 3, column= 1, padx=(15, 50), pady=20, sticky='E')
 location.grid(row= 5, column= 1, padx=15, pady=20)
 
 var = IntVar()
-dlp = tk.Checkbutton (root, text='DLP', variable=var, bg='#fff', font=('helvetica', 10))
+dlp = tk.Checkbutton (root, text='DLP', variable=var, bg='#fff', font=('helvetica', 10)) #tickbox for DLP option in "Folder"
 dlp.grid(row=5, column=1, padx=(0, 50), pady=20, sticky='E')
 
 infolbl = Label(root, text="Send Email", font=('helvetica 8 bold'), foreground='#008000', background='#fff')
